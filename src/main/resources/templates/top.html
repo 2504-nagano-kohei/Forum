@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="@{/css/style.css}" rel="styleSheet">
+    <title>TOP</title>
+</head>
+<body>
+<div class="header-contents">
+    <h1>匿名掲示板</h1>
+</div>
+<div class="main-contents">
+    <a href="/new">
+        <button class="new-button" type="button">新規投稿</button>
+    </a>
+    <div class="message-icon" th:each="content : ${contents}">
+        <div>
+            ID : <span th:text="${content.id}"/>
+        </div>
+        <div class="text">
+            投稿 : <span th:text="${content.content}"/>
+        </div>
+        <!-- method 属性に delete を記述すると自動的にPOST送信になり、
+        「<input type=”hidden” name=”_method” value=”delete”>」も自動的に追記される -->
+        <form th:action="@{/delete/{id}(id=${content.id})}" th:method="delete">
+            <input type="submit" value="削除"/>
+        </form>
+        <a th:href="@{/edit/{id}(id=${content.id})}">
+            <button class="edit-button" type="button">編集</button>
+        </a>
+        <!-- コメントエリア -->
+        <div class="comment">
+            <form method="post" action="/addComment" th:object="${commentFormModel}">
+                <!-- コメントエリア -->
+                <div class="comment-area">
+                    <label>コメント内容</label>
+                    <textarea class="comment-box" name="text" size="20" maxlength="200"></textarea><br/>
+                    <input name="messageId" th:value="${content.id}" type="hidden">
+                    <!-- コメント「返信ボタン」 -->
+                    <input type="submit" value="返信" />
+                </div>
+            </form>
+        </div>
+        <!-- 投稿IDに紐づいたコメントの一覧表示（古い順） -->
+        <div class="message-icon" th:each="comment : ${comments}">
+            <div th:if="${comment.messageId} == ${content.id}">
+                <div class="comment">
+                    コメント : <span th:text="${comment.text}"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
