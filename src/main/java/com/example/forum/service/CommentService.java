@@ -37,7 +37,7 @@ public class CommentService {
             Comment result = results.get(i);
             comment.setId(result.getId());
             comment.setText(result.getText());
-            // repotrIdも取得して入れる
+            // messageIdも取得して入れる
             comments.add(comment);
         }
         return comments;
