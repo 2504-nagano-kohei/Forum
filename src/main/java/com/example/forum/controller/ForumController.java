@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Controller
@@ -23,10 +24,11 @@ public class ForumController {
      * 投稿内容表示処理
      */
     @GetMapping
-    public ModelAndView top() {
+    public ModelAndView top(@RequestParam(name="startDate") String startDate,
+                            @RequestParam(name="endDate") String endDate) throws ParseException  {
         ModelAndView mav = new ModelAndView();
         // 投稿を全件取得
-        List<ReportForm> contentData = reportService.findAllReport();
+        List<ReportForm> contentData = reportService.findAllReport(startDate, endDate);
         // コメントを全件取得
         List<CommentForm> commentData = commentService.findAllComment();
         // 画面遷移先を指定
@@ -112,6 +114,50 @@ public class ForumController {
     public ModelAndView addComment(@ModelAttribute("commentFormModel") CommentForm commentForm){
         // コメントをテーブルに格納
         commentService.saveComment(commentForm);
+        // rootへリダイレクト
+        return new ModelAndView("redirect:/");
+    }
+
+
+    /*
+     * コメント編集画面 表示処理　★課題：コメント編集機能追加
+     */
+    @GetMapping("/editComment/{id}")
+    public ModelAndView editComment(@PathVariable Integer id) {
+        ModelAndView mav = new ModelAndView();
+        // 編集する投稿を取得
+        CommentForm comment = commentService.editComment(id);
+        // 編集する投稿をセット
+        mav.addObject("formModel", comment);
+        // 画面遷移先を指定
+        mav.setViewName("/editComment");
+        return mav;
+    }
+
+    /*
+     * コメント編集処理 ★課題：コメント編集機能追加
+     */
+    // 編集画面から、id および formModel の変数名で入力された投稿内容を受け取る
+    @PutMapping("/updateComment/{id}")
+    public ModelAndView updateContent (@PathVariable Integer id,
+                                       @ModelAttribute("formModel") CommentForm comment) {
+        // 「comment.setId(id);」で、指定された id をセットして、saveComment メソッドへ行って、投稿の更新処理を行う
+        // UrlParameterのidを更新するentityにセット
+        comment.setId(id);
+        // 編集した投稿を更新
+        commentService.saveComment(comment);
+        // 更新処理が終わったら、top画面へ遷移して、最新の状態を表示したいので、投稿内容表示画面(root)へリダイレクト
+        return new ModelAndView("redirect:/");
+    }
+
+    /*
+     * コメント削除処理　★課題：コメント削除機能追加
+     */
+    @DeleteMapping("/deleteComment/{id}")
+    // 「@PathVariable」は form タグ内の action 属性に記述されている { } 内で指定されたURLパラメータを取得する
+    public ModelAndView deleteComment(@PathVariable Integer id) {
+        // 投稿をテーブルに格納
+        commentService.deleteComment(id);
         // rootへリダイレクト
         return new ModelAndView("redirect:/");
     }

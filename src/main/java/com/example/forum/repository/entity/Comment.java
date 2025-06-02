@@ -29,9 +29,9 @@ public class Comment {
     @Column
     private int messageId;
 
-    @Column
+    @Column(name = "created_date", insertable = false, updatable = false)
     private Date createdDate;
 
-    @Column
+    @Column(name = "updated_date", insertable = false, updatable = false)
     private Date updatedDate;
 }

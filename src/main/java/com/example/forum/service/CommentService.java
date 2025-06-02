@@ -37,7 +37,7 @@ public class CommentService {
             Comment result = results.get(i);
             comment.setId(result.getId());
             comment.setText(result.getText());
-            // messageIdも取得して入れる
+            comment.setMessageId(result.getMessageId());
             comments.add(comment);
         }
         return comments;
@@ -65,5 +65,24 @@ public class CommentService {
         comment.setText(commentForm.getText());
         comment.setMessageId(commentForm.getMessageId());
         return comment;
+    }
+
+    /*
+     * レコード1件取得 ★課題：コメント編集機能追加
+     */
+    public CommentForm editComment(Integer id) {
+        List<Comment> results = new ArrayList<>();
+        // CommentRepository は JpaRepository を継承しているため、findById() メソッドを使います。
+        // Id が一致するレコードを取得するような処理。Id が合致しないときは null を返したいので、.orElse(null)
+        results.add((Comment) commentRepository.findById(id).orElse(null));
+        List<CommentForm> comments = setCommentForm(results);
+        return comments.get(0);
+    }
+
+    /*
+     * コメントレコード削除<!-- コメント編集機能追加
+     */
+    public void deleteComment(Integer id) {
+        commentRepository.deleteById(id);
     }
 }

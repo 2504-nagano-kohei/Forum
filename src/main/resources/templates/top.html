@@ -10,6 +10,16 @@
     <h1>匿名掲示板</h1>
 </div>
 <div class="main-contents">
+    <!-- ★課題：日付で投稿を絞り込める機能追加 -->
+    <div>
+        <form action="./" method="get">
+            日付
+            <input type="date" name="startDate" th:value="${startDate}">
+            ～
+            <input type="date" name="endDate" th:value="${endDate}">
+            <input type="submit" value="絞り込み">
+        </form>
+    </div>
     <a href="/new">
         <button class="new-button" type="button">新規投稿</button>
     </a>
@@ -47,6 +57,21 @@
                 <div class="comment">
                     コメント : <span th:text="${comment.text}"/>
                 </div>
+                <!-- ★課題：コメント編集機能追加 -->
+                <div class="edit-button">
+                    <a th:href="@{/editComment/{id}(id=${comment.id})}">
+                        <input type="button" value="編集">
+                    </a>
+                </div>
+                <!-- ★課題：コメント削除機能追加 -->
+                <div class="delete-button">
+                    <!-- 実際に記述する際に method 属性に delete を記述すると自動的にPOST送信になり、
+                    「<input type=”hidden” name=”_method” value=”delete”>」も自動的に追記される -->
+                    <form th:action="@{/deleteComment/{id}(id=${comment.id})}" th:method="delete">
+                        <input type="submit" value="削除">
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
