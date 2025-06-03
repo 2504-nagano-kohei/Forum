@@ -9,20 +9,25 @@ import com.example.forum.repository.entity.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class CommentService {
     @Autowired
     CommentRepository commentRepository;
+    @Autowired
+    ReportRepository reportRepository;
 
     /*
      * レコード全件取得処理
      * commentRepositoryのfindAllを実行
      */
     public List<CommentForm> findAllComment() {
-        List<Comment> results = commentRepository.findAllByOrderByIdDesc();
+        List<Comment> results = commentRepository.findAllByOrderByUpdatedDateDesc();
         List<CommentForm> comments = setCommentForm(results);
         return comments;
     }
@@ -47,23 +52,46 @@ public class CommentService {
     /*
      * コメント追加
      */
-    public void saveComment(CommentForm commentForm) {
+    public void saveComment(CommentForm commentForm, ReportForm reportForm) throws ParseException {
         // setCommentEntityメソッドでFormからEntityに詰め直してRepositoryに渡している
         Comment saveComment = setCommentEntity(commentForm);
-        // テーブルに新規投稿をinsertするような処理になっている
-        // その他にもsaveメソッドには、update文のような処理も兼ね備えている
+
+        // コメントを更新したら、投稿のupdated_dateも更新
+        reportForm.setId(commentForm.getMessageId());
+        if(reportForm.getContent() != null) {
+            Report saveReport = new ReportService().setReportEntity(reportForm);
+            reportRepository.save(saveReport);
+        }
+        // saveメソッドはテーブルに新規投稿をinsertするような処理になっている。その他にも、update文のような処理も兼ね備えている
         commentRepository.save(saveComment);
+    }
+
+    // CommentFormのMessageIdをReportのEntityに詰める
+    public Report saveReportUpdatedDate(ReportForm reportForm) {
+        Report report = new Report();
+       // report.setId(commentForm.getMessageId());
+        //  report.setContent(commentForm.getText());　後で消す
+        return report;
     }
 
     /*
      * リクエストから取得した情報をEntityに設定
      */
-    private Comment setCommentEntity(CommentForm commentForm) {
-        // Entityを生成
+    private Comment setCommentEntity(CommentForm commentForm) throws ParseException {
+        // Entityを生成(ReportのEntityも生成？)
         Comment comment = new Comment();
         comment.setId(commentForm.getId());
         comment.setText(commentForm.getText());
         comment.setMessageId(commentForm.getMessageId());
+        comment.setCreatedDate(commentForm.getCreatedDate());
+
+        // 現在日時を取得してEntityに詰めてあげる
+        Date nowDate = new Date();
+        // フォーマットを指定
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String uDate = sdFormat.format(nowDate);
+        Date updatedDate = sdFormat.parse(uDate);
+        comment.setUpdatedDate(updatedDate);
         return comment;
     }
 

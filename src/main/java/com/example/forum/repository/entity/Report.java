@@ -13,6 +13,7 @@ import java.util.Date;
 @Setter
 public class Report {
     @Id
+
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -20,7 +21,12 @@ public class Report {
     @Column
     private String content;
 
-    @Column(name = "created_date")
-    @Temporal(TemporalType.DATE)
+    @Column(name = "created_date", insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
+
+    // ★課題：5. 表⽰順をコメントも含めて、降順に変更→フィールド追加
+    @Column(name = "updated_date", insertable = false, updatable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDate;
 }

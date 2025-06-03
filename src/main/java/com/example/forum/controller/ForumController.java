@@ -24,8 +24,8 @@ public class ForumController {
      * 投稿内容表示処理
      */
     @GetMapping
-    public ModelAndView top(@RequestParam(name="startDate") String startDate,
-                            @RequestParam(name="endDate") String endDate) throws ParseException  {
+    public ModelAndView top(@RequestParam(name="startDate", required=false) String startDate,
+                            @RequestParam(name="endDate", required=false) String endDate) throws ParseException  {
         ModelAndView mav = new ModelAndView();
         // 投稿を全件取得
         List<ReportForm> contentData = reportService.findAllReport(startDate, endDate);
@@ -59,7 +59,7 @@ public class ForumController {
      * 新規投稿処理
      */
     @PostMapping("/add")
-    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm){
+    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm) throws ParseException {
         // 投稿をテーブルに格納
         reportService.saveReport(reportForm);
         // rootへリダイレクト
@@ -98,7 +98,7 @@ public class ForumController {
      */
     @PutMapping("/update/{id}")
     public ModelAndView updateContent (@PathVariable Integer id,
-                                       @ModelAttribute("formModel") ReportForm report) {
+                                       @ModelAttribute("formModel") ReportForm report) throws ParseException {
         // UrlParameterのidを更新するentityにセット
         report.setId(id);
         // 編集した投稿を更新
@@ -111,9 +111,9 @@ public class ForumController {
      * コメント投稿処理
      */
     @PostMapping("/addComment")
-    public ModelAndView addComment(@ModelAttribute("commentFormModel") CommentForm commentForm){
+    public ModelAndView addComment(@ModelAttribute("formModel") CommentForm commentForm, ReportForm reportForm) throws ParseException {
         // コメントをテーブルに格納
-        commentService.saveComment(commentForm);
+        commentService.saveComment(commentForm, reportForm);
         // rootへリダイレクト
         return new ModelAndView("redirect:/");
     }
@@ -139,13 +139,13 @@ public class ForumController {
      */
     // 編集画面から、id および formModel の変数名で入力された投稿内容を受け取る
     @PutMapping("/updateComment/{id}")
-    public ModelAndView updateContent (@PathVariable Integer id,
-                                       @ModelAttribute("formModel") CommentForm comment) {
+    public ModelAndView updateComment (@PathVariable Integer id,
+                                       @ModelAttribute("formModel") CommentForm comment, ReportForm report) throws ParseException {
         // 「comment.setId(id);」で、指定された id をセットして、saveComment メソッドへ行って、投稿の更新処理を行う
         // UrlParameterのidを更新するentityにセット
         comment.setId(id);
         // 編集した投稿を更新
-        commentService.saveComment(comment);
+        commentService.saveComment(comment, report);
         // 更新処理が終わったら、top画面へ遷移して、最新の状態を表示したいので、投稿内容表示画面(root)へリダイレクト
         return new ModelAndView("redirect:/");
     }

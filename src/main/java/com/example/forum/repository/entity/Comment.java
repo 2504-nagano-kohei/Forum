@@ -1,16 +1,11 @@
 // データアクセス時に使用するJavaBeansのような入れ物
 package com.example.forum.repository.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "comments")
@@ -30,8 +25,10 @@ public class Comment {
     private int messageId;
 
     @Column(name = "created_date", insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
-    @Column(name = "updated_date", insertable = false, updatable = false)
+    @Column(name = "updated_date", insertable = false, updatable = true)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDate;
 }

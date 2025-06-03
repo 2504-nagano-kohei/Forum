@@ -12,6 +12,7 @@ import java.util.List;
 // こちらで特に何か記載する必要はありません。
 // findAllで実行されている処理はSQL文の「select * from report;」ようなイメージ
 public interface ReportRepository extends JpaRepository<Report, Integer> {
-    public List<Report> findAllByOrderByIdDesc();
+    // ★課題：5. 表⽰順をコメントも含めて、更新日時の降順に変更
+    List<Report> findAllByOrderByUpdatedDateDesc();
     public List<Report> findByCreatedDateBetween(Date start, Date end);
 }

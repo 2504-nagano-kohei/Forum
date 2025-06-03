@@ -33,7 +33,8 @@ public class ReportService {
 
         // どっちも未入力の場合はIDによる全件取得
         if (StringUtils.isEmpty(startDate) && StringUtils.isEmpty(endDate)) {
-            results = reportRepository.findAllByOrderByIdDesc();
+            // ★課題：5. 表⽰順をコメントも含めて、降順に変更
+            results = reportRepository.findAllByOrderByUpdatedDateDesc();
         // そうでない場合（どっちも入力ありorどっちか入力あり）は日付指定で絞り込み取得
         } else {
             // ※入力の有無を判定し、開始と終了の日時を引数に設定
@@ -59,13 +60,20 @@ public class ReportService {
      * DBから取得したデータをFormに設定
      */
     private List<ReportForm> setReportForm(List<Report> results) {
+        // リストを用意
         List<ReportForm> reports = new ArrayList<>();
 
         for (int i = 0; i < results.size(); i++) {
             ReportForm report = new ReportForm();
+            // Entityから
             Report result = results.get(i);
+            // Formへ
             report.setId(result.getId());
             report.setContent(result.getContent());
+            report.setCreatedDate(result.getCreatedDate());
+            // ★課題：5. 表⽰順をコメントも含めて、降順に変更→updatedDateもsetに追加
+            report.setUpdatedDate(result.getUpdatedDate());
+            // 用意したリストへ詰める
             reports.add(report);
         }
         return reports;
@@ -74,21 +82,29 @@ public class ReportService {
     /*
      * レコード追加
      */
-    public void saveReport(ReportForm reqReport) {
+    public void saveReport(ReportForm reqReport) throws ParseException {
         // setReportEntityメソッドでFormからEntityに詰め直してRepositoryに渡している
         Report saveReport = setReportEntity(reqReport);
-        // テーブルに新規投稿をinsertするような処理になっている
-        // その他にもsaveメソッドには、update文のような処理も兼ね備えている
+        // saveメソッド→テーブルに新規投稿をinsertするような処理になっている。その他にもupdate文のような処理も兼ね備えている
         reportRepository.save(saveReport);
     }
 
     /*
      * リクエストから取得した情報をEntityに設定
      */
-    private Report setReportEntity(ReportForm reqReport) {
+    Report setReportEntity(ReportForm reqReport) throws ParseException {
         Report report = new Report();
         report.setId(reqReport.getId());
         report.setContent(reqReport.getContent());
+        report.setCreatedDate(reqReport.getCreatedDate());
+
+        // 現在日時を取得
+        Date nowDate = new Date();
+        // フォーマットを指定
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String uDate = sdFormat.format(nowDate);
+        Date updatedDate = sdFormat.parse(uDate);
+        report.setUpdatedDate(updatedDate);
         return report;
     }
 
