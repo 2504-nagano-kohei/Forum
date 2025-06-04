@@ -70,7 +70,6 @@ public class CommentService {
      * リクエストから取得した情報をEntityに設定
      */
     private Comment setCommentEntity(CommentForm commentForm) throws ParseException {
-        // Entityを生成(ReportのEntityも生成？)
         Comment comment = new Comment();
         comment.setId(commentForm.getId());
         comment.setText(commentForm.getText());

@@ -12,7 +12,7 @@ import java.util.Date;
 public class CommentForm {
 
     private int id;
-    @NotBlank(message = "投稿内容を入力してください")
+    @NotBlank(message = "コメントを入力してください")
     private String text;
     private int messageId;
     private Date createdDate;
