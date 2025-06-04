@@ -66,14 +66,6 @@ public class CommentService {
         commentRepository.save(saveComment);
     }
 
-    // CommentFormのMessageIdをReportのEntityに詰める
-    public Report saveReportUpdatedDate(ReportForm reportForm) {
-        Report report = new Report();
-       // report.setId(commentForm.getMessageId());
-        //  report.setContent(commentForm.getText());　後で消す
-        return report;
-    }
-
     /*
      * リクエストから取得した情報をEntityに設定
      */

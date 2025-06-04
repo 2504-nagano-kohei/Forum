@@ -6,6 +6,9 @@ import com.example.forum.service.CommentService;
 import com.example.forum.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -37,6 +40,7 @@ public class ForumController {
         mav.addObject("contents", contentData);
         // コメントデータオブジェクトを保管
         mav.addObject("comments", commentData);
+        mav.addObject("formModel", new CommentForm());
         return mav;
     }
 
@@ -59,7 +63,19 @@ public class ForumController {
      * 新規投稿処理
      */
     @PostMapping("/add")
-    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm) throws ParseException {
+    public ModelAndView addContent(@Validated @ModelAttribute("formModel") ReportForm reportForm, BindingResult
+            result) throws ParseException {
+        if(result.hasErrors()) {
+            ModelAndView mav = new ModelAndView();
+            mav.setViewName("/new");
+//            for(FieldError error : result.getFieldErrors()) {
+//                String field = error.getField();
+//                String Message = error.getDefaultMessage();
+//            }
+            mav.addObject("formModel", reportForm); // 入力内容を保持
+            return mav;
+        }
+
         // 投稿をテーブルに格納
         reportService.saveReport(reportForm);
         // rootへリダイレクト
@@ -98,11 +114,22 @@ public class ForumController {
      */
     @PutMapping("/update/{id}")
     public ModelAndView updateContent (@PathVariable Integer id,
-                                       @ModelAttribute("formModel") ReportForm report) throws ParseException {
+                                       @Validated @ModelAttribute("formModel") ReportForm reportForm,
+                                       BindingResult result) throws ParseException {
+        if(result.hasErrors()) {
+            ModelAndView mav = new ModelAndView();
+            mav.setViewName("/new");
+//            for(FieldError error : result.getFieldErrors()) {
+//                String field = error.getField();
+//                String Message = error.getDefaultMessage();
+//            }
+            mav.addObject("formModel", reportForm); // 入力内容を保持
+            return mav;
+        }
         // UrlParameterのidを更新するentityにセット
-        report.setId(id);
+        reportForm.setId(id);
         // 編集した投稿を更新
-        reportService.saveReport(report);
+        reportService.saveReport(reportForm);
         // rootへリダイレクト
         return new ModelAndView("redirect:/");
     }
@@ -111,7 +138,15 @@ public class ForumController {
      * コメント投稿処理
      */
     @PostMapping("/addComment")
-    public ModelAndView addComment(@ModelAttribute("formModel") CommentForm commentForm, ReportForm reportForm) throws ParseException {
+    public ModelAndView addComment(@Validated @ModelAttribute("formModel") CommentForm commentForm,
+                                   ReportForm reportForm, BindingResult result) throws ParseException {
+        // バリデーション
+        if(result.hasErrors()) {
+            ModelAndView mav = new ModelAndView();
+            mav.setViewName("/");
+            mav.addObject("formModel", commentForm); // 入力内容を保持
+            return mav;
+        }
         // コメントをテーブルに格納
         commentService.saveComment(commentForm, reportForm);
         // rootへリダイレクト

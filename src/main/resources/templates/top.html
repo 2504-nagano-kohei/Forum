@@ -44,13 +44,15 @@
         </a>
         <!-- コメントエリア -->
         <div class="comment">
-            <form method="post" action="/addComment" th:object="${commentFormModel}">
+            <form method="post" action="/addComment">
                 <!-- コメントエリア -->
                 <div class="comment-area">
                     <label>コメント内容</label>
                     <textarea class="comment-box" name="text" size="20" maxlength="200"></textarea><br/>
                     <input name="messageId" th:value="${content.id}" type="hidden">
 
+                    <!-- エラーメッセージ表示エリア -->
+                        <p th:errors="${commentForm.text}" style="color:red;"></p>
                     <!-- コメント「返信ボタン」 -->
                     <input type="submit" value="返信" />
                 </div>
