@@ -11,8 +11,6 @@ import java.util.Date;
 @Setter
 public class CommentForm {
 
-
-
     private int id;
     @NotBlank(message = "投稿内容を入力してください")
     private String text;

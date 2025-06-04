@@ -52,7 +52,7 @@
                     <input name="messageId" th:value="${content.id}" type="hidden">
 
                     <!-- エラーメッセージ表示エリア -->
-                        <p th:errors="${commentForm.text}" style="color:red;"></p>
+                    <p th:errors="${commentForm.text}" style="color:red;"></p>
                     <!-- コメント「返信ボタン」 -->
                     <input type="submit" value="返信" />
                 </div>
